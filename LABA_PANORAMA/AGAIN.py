@@ -129,14 +129,49 @@ def RANSACK(image1: np.ndarray, image2: np.ndarray, count_iterations: int, corid
             best_matrix = A
 
     new_positions = []
+    min_x = float("inf")
+    min_y = float("inf")
+    max_x = -float("inf")
+    max_y = -float("inf")
     for i in range(image1.shape[0]):
+        row = []
         for j in range(image1.shape[1]):
             n_x = best_matrix[0] * j + best_matrix[1] * i + best_matrix[2]
             n_y = best_matrix[3] * j + best_matrix[4] * i + best_matrix[5]
-            new_positions.append((int(n_x), int(n_y)))
+            if int(n_x) < min_x:
+                min_x = int(n_x)
+            if int(n_y) < min_y:
+                min_y = int(n_y)
+            if int(n_x) > max_x:
+                max_x = int(n_x)
+            if int(n_y) > max_y:
+                max_y = int(n_y)
+            row.append((int(n_y), int(n_x)))
+        new_positions.append(row)
 
-    print(new_positions)
-    print(image1.shape, image2.shape)
+    shift_x = 0
+    shift_y = 0
+    if int(min_x) < 0:
+        shift_x = -int(min_x)
+    if int(min_y) < 0:
+        shift_y = -int(min_y)
+    
+    print(shift_y, shift_x)
+    print(new_positions[0][0])
+    print(new_positions[image1.shape[0] - 1][image1.shape[1] - 1])
+    print(max_x - min_x + image2.shape[1])
+    
+    mixed_image = np.zeros(shape=(image1.shape[0] + image2.shape[0], image1.shape[1] + image2.shape[1] + 1), dtype=np.uint8)
+
+    for y in range(image2.shape[0]):
+        for x in range(image2.shape[1]):
+            mixed_image[y][x] = image2[y][x]
+
+    for y in range(image1.shape[0]):
+        for x in range(image1.shape[1]):
+            mixed_image[new_positions[y][x][0] + shift_y][new_positions[y][x][1] + shift_x] = image1[y][x]
+
+    cv2.imshow("mix", mixed_image)
 
     # matrix = np.array([[best_matrix[0], best_matrix[1], best_matrix[2]],
     #                    [best_matrix[3], best_matrix[4], best_matrix[5]]])
@@ -146,11 +181,11 @@ def RANSACK(image1: np.ndarray, image2: np.ndarray, count_iterations: int, corid
 
 
 
-image_ = cv2.imread("Rainier1.png", cv2.IMREAD_GRAYSCALE)
+image2_ = cv2.imread("Rainier1.png", cv2.IMREAD_GRAYSCALE)
 
-image2_ = cv2.imread("Rainier2.png", cv2.IMREAD_GRAYSCALE)
-cv2.imshow("1", image_)
-cv2.imshow("2", image2_)
+image_ = cv2.imread("Rainier2.png", cv2.IMREAD_GRAYSCALE)
+# cv2.imshow("1", image_)
+# cv2.imshow("2", image2_)
 
 RANSACK(image_, image2_, 10000, 4)
 
