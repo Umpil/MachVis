@@ -281,7 +281,7 @@ def NonMaxSupression(harris_responce: np.ndarray, ksize: int = 5) -> np.ndarray:
 
 
 if __name__ == "__main__":
-    img = cv2.imread("C:/Users/pavel/PycharmProjects/VisualMach/CV_lab3/data/Rainier2.png", cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread("Rainier2.png", cv2.IMREAD_GRAYSCALE)
     som = 5
     val = 0.01
     tresh = 0.1
